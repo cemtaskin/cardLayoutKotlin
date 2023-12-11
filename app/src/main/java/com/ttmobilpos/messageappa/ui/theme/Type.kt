@@ -14,7 +14,17 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
-    )
+    ),
+    labelMedium = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 1.5.sp,),
+    bodySmall = TextStyle(
+
+        fontSize = 12.sp,
+        lineHeight = 8.sp,
+        letterSpacing = 0.25.sp,)
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,

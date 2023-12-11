@@ -91,7 +91,11 @@ fun MainScreen(){
                 .fillMaxWidth()
                 .padding(paddingValues = paddingValues),
             ) {
-                ProfileCard()
+                Column {
+                    ProfileCard(userProfile = userProfiles[0])
+                    ProfileCard(userProfile = userProfiles[1])
+                }
+
             }
         }
 
@@ -99,13 +103,13 @@ fun MainScreen(){
 }
 
 @Composable
-fun ProfileCard(){
+fun ProfileCard(userProfile: UserProfile){
     Card(
         modifier =
-    Modifier
-        .padding(16.dp)
-        .fillMaxWidth()
-        .wrapContentHeight(align = Alignment.Top),
+        Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .wrapContentHeight(align = Alignment.Top),
         elevation = CardDefaults.cardElevation(
         defaultElevation = 8.dp,
 
@@ -116,21 +120,21 @@ fun ProfileCard(){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            ProfilePicture()
-            ProfileContent()
+            ProfilePicture(onlineStatus = userProfile.status, drawableId = userProfile.drawableId)
+            ProfileContent(onlineStatus = userProfile.status, name = userProfile.name)
         }
     }
 }
 
 @Composable
-fun ProfilePicture(){
+fun ProfilePicture(onlineStatus : Boolean , drawableId : Int){
     Card(
         shape = CircleShape,
-        border = BorderStroke(width = 2.dp, color = Color.lightGreen),
+        border = BorderStroke(width = 2.dp, color = if (onlineStatus)  Color.lightGreen else Color.Red),
         modifier = Modifier.padding(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation  = 8.dp)
     ) {
-        Image(painterResource(R.drawable.profile_picture),
+        Image(painterResource(drawableId),
             contentDescription = "",
             modifier = Modifier.size(72.dp),
             contentScale = ContentScale.Crop
@@ -141,14 +145,15 @@ fun ProfilePicture(){
 }
 
 @Composable
-fun ProfileContent(){
+fun ProfileContent(name : String , onlineStatus: Boolean){
     Column(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
     ) {
-        Text("Cem TAŞKIN",modifier = Modifier.fillMaxWidth(), style = MaterialTheme.typography.headlineSmall)
-        Text("Active Now", modifier = Modifier.alpha(0.4f),style = MaterialTheme.typography.bodySmall)
+        Text(name,modifier = Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelMedium)
+        Text(
+            if (onlineStatus) "Active Now" else "Offline", modifier = Modifier.alpha(0.4f),style = MaterialTheme.typography.bodySmall)
     }
 
 }
