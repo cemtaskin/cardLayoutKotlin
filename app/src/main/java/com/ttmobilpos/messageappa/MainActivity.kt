@@ -57,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ttmobilpos.messageappa.ui.theme.MessageAppATheme
 import com.ttmobilpos.messageappa.ui.theme.lightGreen
+import com.ttmobilpos.messageappa.ui.theme.shapeScheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,14 +100,17 @@ fun MainScreen(){
 
 @Composable
 fun ProfileCard(){
-    Card(modifier =
+    Card(
+        modifier =
     Modifier
         .padding(16.dp)
         .fillMaxWidth()
         .wrapContentHeight(align = Alignment.Top),
         elevation = CardDefaults.cardElevation(
-        defaultElevation = 8.dp
-    )) {
+        defaultElevation = 8.dp,
+
+    ),
+    shape = MaterialTheme.shapeScheme.medium) {
         Row(
             modifier = Modifier.wrapContentSize(),
             verticalAlignment = Alignment.CenterVertically,
