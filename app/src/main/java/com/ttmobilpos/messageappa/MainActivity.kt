@@ -2,11 +2,13 @@ package com.ttmobilpos.messageappa
 
 import android.graphics.drawable.Icon
 import android.os.Bundle
+import android.service.autofill.OnClickAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +23,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -55,6 +59,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.ttmobilpos.messageappa.ui.theme.MessageAppATheme
 import com.ttmobilpos.messageappa.ui.theme.lightGreen
 import com.ttmobilpos.messageappa.ui.theme.shapeScheme
@@ -64,52 +72,102 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MessageAppATheme() {
-                MainScreen()
+                UserApplication()
             }
 
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun MainScreen(){
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    navigationIcon = {
-                        Icon(Icons.Default.Home, contentDescription = "", modifier = Modifier.padding(12.dp))
-                    },
-                    title = {
-
-                            Text(text = "Messaging Application Users") }
-                )
-            },
-
-        ) {paddingValues ->
-            Surface(modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues = paddingValues),
-            ) {
-                Column {
-                    ProfileCard(userProfile = userProfiles[0])
-                    ProfileCard(userProfile = userProfiles[1])
-                }
-
-            }
+fun UserApplication (userProfiles: List<UserProfile> = userProfileList){
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination =
+    "users_list"){
+        composable(
+            "users_list"){
+            UserListScreen(userProfiles,navController)
+        }
+        composable("user_details"){
+            UserProfileDetailScreen()
         }
 
-
+    }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileCard(userProfile: UserProfile){
+fun UserListScreen (userProfiles : List<UserProfile>,navController: NavHostController?){
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    Icon(Icons.Default.Home, contentDescription = "", modifier = Modifier.padding(12.dp))
+                },
+                title = {
+                    Text(text = "Messaging Application Users")
+                }
+            )
+        },
+
+        ) {paddingValues ->
+        Surface(modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues = paddingValues),
+        ) {
+            LazyColumn{
+                items(userProfileList){
+                        userProfile-> ProfileCard(userProfile = userProfile){
+                            navController?.navigate("user_details")
+                        }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserProfileDetailScreen (userProfile: UserProfile = userProfileList[0]){
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    Icon(Icons.Default.Home, contentDescription = "", modifier = Modifier.padding(12.dp))
+                },
+                title = {
+                    Text(text = "Messaging Application Users")
+                }
+            )
+        },
+
+        ) {paddingValues ->
+        Surface(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues = paddingValues),
+        ) {
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+                ProfilePicture(onlineStatus = userProfile.status, drawableId = userProfile.drawableId)
+                ProfileContent(onlineStatus = userProfile.status, name = userProfile.name)
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun ProfileCard(userProfile: UserProfile,clickAction: ()->Unit){
     Card(
         modifier =
         Modifier
             .padding(16.dp)
             .fillMaxWidth()
-            .wrapContentHeight(align = Alignment.Top),
+            .wrapContentHeight(align = Alignment.Top)
+            .clickable (onClick = {clickAction.invoke()})
+        ,
         elevation = CardDefaults.cardElevation(
         defaultElevation = 8.dp,
 
@@ -151,16 +209,24 @@ fun ProfileContent(name : String , onlineStatus: Boolean){
             .padding(8.dp)
             .fillMaxWidth()
     ) {
-        Text(name,modifier = Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelMedium)
+        Text(name,modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.labelMedium)
         Text(
-            if (onlineStatus) "Active Now" else "Offline", modifier = Modifier.alpha(0.4f),style = MaterialTheme.typography.bodySmall)
+            if (onlineStatus) "Active Now" else "Offline",
+            modifier = Modifier.alpha(0.4f),
+            style = MaterialTheme.typography.bodySmall)
     }
 
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview() {
-    MainScreen()
+fun AppPreview() {
+    UserApplication()
 }
+@Preview(showBackground = true)
+@Composable
+fun UserProfileDetailPreview() {
+    UserProfileDetailScreen()
+}
+
